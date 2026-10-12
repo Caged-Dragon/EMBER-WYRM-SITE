@@ -1,0 +1,61 @@
+/* Dragon Pyre ecosystem UI — plain CSS, independent of each site's Tailwind version. */
+.dps-backdrop, .dps-dock, .dps-dock * , .dps-backdrop * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.dps-backdrop { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; padding: 16px; background: rgba(6,3,2,.78); backdrop-filter: blur(6px); }
+.dps-card { position: relative; width: 100%; max-width: 400px; max-height: 94vh; overflow: auto; padding: 26px 24px 20px; color: #fde7d3; background: linear-gradient(160deg,#241109,#12080a 60%); border: 1px solid rgba(251,146,60,.3); border-radius: 20px; box-shadow: 0 0 60px rgba(249,115,22,.22), 0 24px 60px rgba(0,0,0,.6); }
+.dps-x { position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: #fdba74; font-size: 24px; line-height: 1; cursor: pointer; }
+.dps-x:hover { background: rgba(255,255,255,.08); }
+.dps-flame { font-size: 30px; text-align: center; }
+.dps-title { margin: 4px 0 4px; text-align: center; font-size: 21px; font-weight: 800; letter-spacing: .01em; color: #fff3e6; }
+.dps-sub { margin: 0 0 16px; text-align: center; font-size: 12.5px; line-height: 1.45; color: #d6a98a; }
+.dps-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 14px; background: rgba(0,0,0,.35); border-radius: 12px; }
+.dps-tabs button { padding: 8px 6px; border: 0; border-radius: 9px; background: transparent; color: #d6a98a; font-size: 13px; font-weight: 700; cursor: pointer; }
+.dps-tabs button.on { background: linear-gradient(135deg,#f97316,#dc2626); color: #fff; }
+.dps-form { display: grid; gap: 12px; }
+.dps-form label { display: grid; gap: 5px; }
+.dps-form label span { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #fdba74; }
+.dps-form input { width: 100%; padding: 11px 12px; color: #fff3e6; font-size: 15px; background: rgba(0,0,0,.4); border: 1px solid rgba(251,146,60,.28); border-radius: 10px; outline: none; }
+.dps-form input:focus { border-color: #fb923c; box-shadow: 0 0 0 3px rgba(251,146,60,.2); }
+.dps-form input::placeholder { color: #8a6650; }
+.dps-primary { width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; color: #fff; font-size: 14.5px; font-weight: 800; cursor: pointer; background: linear-gradient(135deg,#f97316,#dc2626); box-shadow: 0 6px 22px rgba(249,115,22,.35); }
+.dps-primary:hover:not(:disabled) { filter: brightness(1.08); }
+.dps-primary:disabled { opacity: .6; cursor: wait; }
+.dps-msg { margin: 0; padding: 9px 11px; border-radius: 9px; font-size: 13px; line-height: 1.4; }
+.dps-err { color: #fecaca; background: rgba(220,38,38,.18); border: 1px solid rgba(248,113,113,.35); }
+.dps-ok { color: #bbf7d0; background: rgba(22,163,74,.16); border: 1px solid rgba(74,222,128,.3); }
+.dps-links { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.dps-links button { padding: 4px 2px; border: 0; background: none; color: #fdba74; font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+.dps-dock { position: fixed; z-index: 2147482000; }
+.dps-bottom-left { left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom)); }
+.dps-bottom-right { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); }
+.dps-top-left { left: max(12px, env(safe-area-inset-left)); top: max(12px, env(safe-area-inset-top)); }
+.dps-top-right { right: max(12px, env(safe-area-inset-right)); top: max(12px, env(safe-area-inset-top)); }
+.dps-fab { position: relative; display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border-radius: 50%; font-size: 21px; line-height: 1; cursor: pointer; color: #fff; background: radial-gradient(circle at 30% 25%,#7c2d12,#1c0b07); border: 1px solid rgba(251,146,60,.55); box-shadow: 0 4px 18px rgba(0,0,0,.55), 0 0 14px rgba(249,115,22,.3); opacity: .88; transition: transform .15s, opacity .15s; }
+.dps-fab:hover, .dps-fab[aria-expanded="true"] { opacity: 1; transform: scale(1.07); }
+.dps-dot { position: absolute; top: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: #f97316; border: 2px solid #1c0b07; animation: dps-pulse 1.8s infinite; }
+@keyframes dps-pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.35);} }
+.dps-panel { position: absolute; width: 264px; padding: 12px; color: #fde7d3; background: linear-gradient(160deg,#241109,#12080a 70%); border: 1px solid rgba(251,146,60,.3); border-radius: 16px; box-shadow: 0 18px 50px rgba(0,0,0,.65); }
+.dps-bottom-left .dps-panel, .dps-bottom-right .dps-panel { bottom: 52px; }
+.dps-top-left .dps-panel, .dps-top-right .dps-panel { top: 52px; }
+.dps-bottom-left .dps-panel, .dps-top-left .dps-panel { left: 0; }
+.dps-bottom-right .dps-panel, .dps-top-right .dps-panel { right: 0; }
+.dps-who { display: flex; align-items: center; gap: 10px; padding: 4px 4px 10px; }
+.dps-av { display: grid; place-items: center; flex: none; width: 40px; height: 40px; font-size: 22px; background: rgba(249,115,22,.15); border: 1px solid rgba(251,146,60,.35); border-radius: 12px; }
+.dps-who > div { min-width: 0; flex: 1; }
+.dps-who strong { display: block; font-size: 14px; color: #fff3e6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dps-who small, .dps-guest small { display: block; font-size: 11.5px; color: #d6a98a; }
+.dps-bar { height: 5px; margin-top: 6px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; }
+.dps-bar b { display: block; height: 100%; background: linear-gradient(90deg,#fb923c,#ef4444); }
+.dps-guest { display: grid; gap: 6px; padding: 2px 2px 10px; }
+.dps-guest strong { font-size: 14px; color: #fff3e6; }
+.dps-guest .dps-primary { margin-top: 4px; padding: 10px 12px; font-size: 13px; }
+.dps-h { margin: 4px 4px 6px; font-size: 10.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #fb923c; }
+.dps-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; color: inherit; text-decoration: none; }
+a.dps-row:hover { background: rgba(251,146,60,.12); }
+.dps-row > span:first-child { flex: none; font-size: 20px; width: 26px; text-align: center; }
+.dps-row b { display: block; font-size: 13px; color: #fff3e6; }
+.dps-row small { display: block; font-size: 11px; color: #c99a7c; }
+.dps-here { background: rgba(249,115,22,.14); border: 1px solid rgba(251,146,60,.25); }
+.dps-foot { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; padding: 10px 6px 0; border-top: 1px solid rgba(251,146,60,.18); }
+.dps-foot a, .dps-foot button { padding: 0; border: 0; background: none; font-size: 12px; color: #fdba74; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .dps-dot { animation: none; } .dps-fab { transition: none; } }

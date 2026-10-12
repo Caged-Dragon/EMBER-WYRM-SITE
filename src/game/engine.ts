@@ -23,6 +23,7 @@ import {
   updateHighScore,
   writeSave,
 } from './systems/saveManager';
+import { reportRun } from '../dps';
 import type {
   BonusFoodState,
   DragonState,
@@ -712,12 +713,19 @@ export class GameEngine {
     this.alive = false;
     this.gameOverReason = reason;
     this.highScore = updateHighScore(this.highScoreKey(), this.score);
+    this.reportToRealm();
     clearSave();
     return { type: 'game_over', reason };
   }
 
+  /** Posts the finished run to the shared Dragon Realm leaderboard (queued after login for guests). */
+  private reportToRealm(): void {
+    if (this.score > 0) void reportRun('ember-wyrm', this.score, { mode: this.mode, level: this.levelId });
+  }
+
   private completeLevel(): EngineEvent {
     this.highScore = updateHighScore(this.highScoreKey(), this.score);
+    if (this.mode === GAME_MODES.LEVEL_BASED) this.reportToRealm();
 
     if (this.mode === GAME_MODES.LEVEL_BASED) {
       this.levelComplete = true;
@@ -743,6 +751,7 @@ export class GameEngine {
   private completeBossFight(): EngineEvent {
     this.levelComplete = true;
     this.highScore = updateHighScore(this.highScoreKey(), this.score);
+    this.reportToRealm();
     // Keep the warrior visible during the delayed completion pause so the
     // player can see exactly how they trapped him.
     return { type: 'boss_trapped', tier: this.bossTier };

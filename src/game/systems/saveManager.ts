@@ -7,6 +7,9 @@ import {
   type SpeedName,
 } from '../constants';
 import type { SaveData, SettingsData } from '../types';
+import { deleteCloudSave, loadCloudSave, queueCloudSave, reportRun } from '../../dps';
+
+const CLOUD_GAME = 'ember-wyrm';
 
 // Bumped to 5: fixed crashing portal-gap mismatches on Levels 12-15 and Level 10
 const SAVE_VERSION = 5;
@@ -51,6 +54,7 @@ export function saveSettings(settings: SettingsData): void {
   } catch {
     // storage may be unavailable
   }
+  queueCloudSave(CLOUD_GAME, 'settings', settings, SAVE_VERSION);
 }
 
 export function setSpeedSetting(speed: SpeedName): void {
@@ -101,6 +105,7 @@ export function writeSave(data: Omit<SaveData, 'version' | 'timestamp'>): void {
       timestamp: Date.now(),
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(full));
+    queueCloudSave(CLOUD_GAME, 'main', full, SAVE_VERSION);
   } catch {
     // ignore
   }
@@ -112,8 +117,52 @@ export function clearSave(): void {
   } catch {
     // ignore
   }
+  void deleteCloudSave(CLOUD_GAME, 'main');
 }
 
 export function hasSave(): boolean {
   return loadSave() !== null;
+}
+
+/**
+ * Called right after sign-in: merges cloud + local settings/high scores (best of both)
+ * and restores the newest mid-run save. Returns the merged settings.
+ */
+export async function syncFromCloud(): Promise<SettingsData> {
+  const [cloudSave, cloudSettings] = await Promise.all([
+    loadCloudSave<SaveData>(CLOUD_GAME, 'main'),
+    loadCloudSave<SettingsData>(CLOUD_GAME, 'settings'),
+  ]);
+
+  const local = loadSettings();
+  const merged: SettingsData = { ...local, highScores: { ...local.highScores } };
+  if (cloudSettings) {
+    const c = cloudSettings.data;
+    for (const [k, v] of Object.entries(c.highScores ?? {})) {
+      if (typeof v === 'number' && v > (merged.highScores[k] ?? 0)) merged.highScores[k] = v;
+    }
+    if (c.speed) merged.speed = c.speed;
+    if (typeof c.foodLimit === 'number') merged.foodLimit = clampFoodLimit(c.foodLimit);
+  }
+  saveSettings(merged); // also pushes the merged copy back up
+
+  // First time on the leaderboard? Post the best score earned before the account existed.
+  if (!cloudSettings) {
+    const best = Math.max(0, ...Object.values(merged.highScores));
+    if (best > 0) void reportRun(CLOUD_GAME, best, { source: 'local-best' });
+  }
+
+  const localSave = loadSave();
+  const remote = cloudSave?.data;
+  if (remote && remote.version === SAVE_VERSION && (!localSave || remote.timestamp > localSave.timestamp)) {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(remote));
+    } catch {
+      // ignore
+    }
+  } else if (localSave && (!remote || localSave.timestamp > remote.timestamp)) {
+    queueCloudSave(CLOUD_GAME, 'main', localSave, SAVE_VERSION, 500);
+  }
+
+  return merged;
 }

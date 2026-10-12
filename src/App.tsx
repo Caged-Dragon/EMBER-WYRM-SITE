@@ -28,7 +28,9 @@ import {
   setFoodLimitSetting,
   setSpeedSetting,
   setUIThemeSetting,
+  syncFromCloud,
 } from './game/systems/saveManager';
+import { DragonDock, useAuth } from './dps';
 
 export default function App() {
   const [isLight, setIsLight] = useState<boolean>(
@@ -47,6 +49,7 @@ export default function App() {
   return (
     <LightModeProvider isLight={isLight}>
       <GameApp isLight={isLight} onToggleTheme={toggleTheme} />
+      <DragonDock siteSlug="ember-wyrm" position="bottom-left" />
     </LightModeProvider>
   );
 }
@@ -69,6 +72,23 @@ function GameApp({ isLight, onToggleTheme }: GameAppProps) {
   /** True when the current boss fight was launched from Level Select. */
   const [bossTestMode, setBossTestMode] = useState(false);
   const touchPauseRef = useRef(false);
+  const { user } = useAuth();
+  const uid = user?.id;
+
+  // On sign-in: merge cloud + local progress and restore the newest mid-run save.
+  useEffect(() => {
+    if (!uid) return;
+    let alive = true;
+    void syncFromCloud().then((s) => {
+      if (!alive) return;
+      setSpeed(s.speed);
+      setFoodLimit(s.foodLimit);
+      setSaveExists(hasSave());
+    });
+    return () => {
+      alive = false;
+    };
+  }, [uid]);
 
   const go = useCallback((s: GameState | 'FOOD_LIMIT_POPUP') => setScreen(s), []);
 
