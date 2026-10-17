@@ -1,4 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
+import { RealmBackdrop } from '../dps';
 
 /** Lets nested controls (buttons) pick up light/dark without prop drilling */
 export const LightModeContext = createContext(false);
@@ -35,16 +36,14 @@ export function MenuShell({
   const ctxLight = useLightMode();
   const isLight = isLightProp ?? ctxLight;
   return (
-    <div className="relative flex min-h-full w-full flex-col items-center justify-center overflow-hidden px-4 py-8">
+    <div className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden px-[clamp(0.75rem,0.4rem+2vw,2rem)] py-[clamp(1.25rem,0.8rem+3vw,3rem)]">
       {/* Animated backdrop */}
-      <div
-        className={
-          isLight
-            ? 'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,#d8eadc_0%,#c7ddd0_45%,#b8d0c8_100%)]'
-            : 'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,#1a4a2a_0%,#0a1a12_45%,#050a08_100%)]'
-        }
-      />
-      <div className={`pointer-events-none absolute inset-0 ${isLight ? 'opacity-60' : 'opacity-40'}`}>
+      {isLight ? (
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,#d8eadc_0%,#c7ddd0_45%,#b8d0c8_100%)]" />
+      ) : (
+        <RealmBackdrop contained palette={['emerald', 'gold', 'emerald', 'frost']} cycleMs={11000} dragons intensity={0.9} />
+      )}
+      <div className={`pointer-events-none absolute inset-0 ${isLight ? 'opacity-60' : 'opacity-25'}`}>
         <div
           className={`absolute left-[10%] top-[20%] h-64 w-64 animate-pulse rounded-full blur-3xl ${
             isLight ? 'bg-emerald-400/24' : 'bg-emerald-600/20'
@@ -63,7 +62,7 @@ export function MenuShell({
       </div>
 
       {/* Decorative dragon silhouette marks */}
-      <div className={`pointer-events-none absolute left-6 top-6 text-6xl ${isLight ? 'opacity-20' : 'opacity-10'}`}>
+      <div className={`em-float pointer-events-none absolute left-6 top-6 text-6xl ${isLight ? 'opacity-20' : 'opacity-10'}`}>
         🐉
       </div>
       <div className={`pointer-events-none absolute bottom-8 right-8 text-6xl ${isLight ? 'opacity-20' : 'opacity-10'}`}>
@@ -72,8 +71,8 @@ export function MenuShell({
 
       {cornerSlot && <div className="absolute right-4 top-4 z-20">{cornerSlot}</div>}
 
-      <div className="relative z-10 w-full max-w-lg">
-        <div className="mb-8 text-center">
+      <div className="relative z-10 w-[min(100%,clamp(20rem,15rem+24vw,34rem))]">
+        <div className="em-rise mb-[clamp(1.25rem,0.9rem+1.6vw,2rem)] text-center">
           <div
             className={`mb-3 inline-flex items-center gap-2 rounded-full border px-4 py-1 text-xs font-semibold tracking-[0.2em] uppercase ${
               isLight
@@ -84,7 +83,7 @@ export function MenuShell({
             Top-View
           </div>
           <h1
-            className={`bg-clip-text text-4xl font-black tracking-tight text-transparent drop-shadow-lg sm:text-5xl ${
+            className={`em-title bg-clip-text text-[length:clamp(2.1rem,1.3rem+3.6vw,3.75rem)] font-black leading-[1.05] tracking-tight text-transparent drop-shadow-lg ${
               isLight
                 ? 'bg-gradient-to-r from-amber-700 via-emerald-700 to-teal-700'
                 : 'bg-gradient-to-r from-amber-200 via-emerald-300 to-teal-200'
@@ -100,7 +99,7 @@ export function MenuShell({
         </div>
 
         <div
-          className={`rounded-2xl border p-5 shadow-2xl backdrop-blur-md sm:p-6 ${
+          className={`em-card rounded-2xl border p-[clamp(1rem,0.7rem+1.2vw,1.5rem)] shadow-2xl backdrop-blur-md ${
             isLight
               ? 'border-emerald-700/15 bg-white/75 shadow-emerald-900/10'
               : 'border-emerald-500/20 bg-black/40 shadow-emerald-950/50'
@@ -141,7 +140,7 @@ export function MenuButton({
   const ctxLight = useLightMode();
   const isLight = isLightProp ?? ctxLight;
   const base =
-    'group relative flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-base font-bold tracking-wide transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40';
+    'em-btn group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-[clamp(0.7rem,0.55rem+0.5vw,0.95rem)] text-[length:clamp(0.9rem,0.82rem+0.3vw,1.05rem)] font-bold tracking-wide transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40';
 
   const dark: Record<string, string> = {
     primary:

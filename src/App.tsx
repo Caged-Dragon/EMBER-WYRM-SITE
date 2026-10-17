@@ -22,7 +22,6 @@ import { GameEngine, type EngineEvent } from './game/engine';
 import { LEVEL_META } from './game/levels/themes';
 import {
   clampFoodLimit,
-  clearSave,
   hasSave,
   loadSettings,
   setFoodLimitSetting,
@@ -30,7 +29,7 @@ import {
   setUIThemeSetting,
   syncFromCloud,
 } from './game/systems/saveManager';
-import { DragonDock, useAuth } from './dps';
+import { DragonDock, exitToHub, useAuth } from './dps';
 
 export default function App() {
   const [isLight, setIsLight] = useState<boolean>(
@@ -264,15 +263,13 @@ function GameApp({ isLight, onToggleTheme }: GameAppProps) {
               }}
             />
             <MenuButton
-              label="Exit"
+              label="Exit to DracoPyre Strike"
               icon="🚪"
               variant="danger"
               onClick={() => {
-                clearSave();
-                setSaveExists(false);
                 SFX.select();
-                setMessage('Save cleared. Thanks for playing!');
-                // Browser: stay on menu; desktop would close
+                setMessage('Heading back to DracoPyre Strike…');
+                void exitToHub(); // progress is autosaved — nothing is cleared
               }}
             />
             {message && (

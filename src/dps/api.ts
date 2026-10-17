@@ -1,5 +1,5 @@
 import { supabase } from './client';
-import { SCORE_DIRECTION } from './config';
+import { HUB_URL, SCORE_DIRECTION } from './config';
 
 /* ------------------------------------------------------------------ */
 /* helpers                                                             */
@@ -287,4 +287,23 @@ export async function isUsernameTaken(name: string): Promise<boolean> {
   const escaped = name.replace(/[\\%_]/g, '\\$&');
   const { data } = await supabase.from('profiles').select('id').ilike('username', escaped).limit(1);
   return (data ?? []).length > 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* navigation between sites (same tab)                                 */
+/* ------------------------------------------------------------------ */
+
+/** Saves pending progress (max ~1.5s), then navigates the current tab. */
+export async function leaveTo(url: string): Promise<void> {
+  try {
+    await Promise.race([flushCloudSaves(), sleep(1500)]);
+  } catch {
+    /* never block navigation */
+  }
+  window.location.assign(url);
+}
+
+/** "Exit" button target for every standalone game. */
+export function exitToHub(): Promise<void> {
+  return leaveTo(HUB_URL);
 }

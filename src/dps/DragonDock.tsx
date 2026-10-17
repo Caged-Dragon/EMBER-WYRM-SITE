@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import { useAuth } from './context';
 import { ECOSYSTEM_SITES, HUB_URL, avatarEmoji, levelFromXp } from './config';
+import { leaveTo } from './api';
 
 export type DockPosition = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
 
@@ -43,6 +44,12 @@ export function DragonDock({ siteSlug, position = 'bottom-left' }: { siteSlug: s
     };
   }, [open]);
 
+  const go = (e: ReactMouseEvent, url: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let "open in new tab" work
+    e.preventDefault();
+    void leaveTo(url);
+  };
+
   const lvl = levelFromXp(profile?.xp ?? 0);
   const name = profile?.display_name || profile?.username || user?.email?.split('@')[0] || 'Player';
 
@@ -84,9 +91,9 @@ export function DragonDock({ siteSlug, position = 'bottom-left' }: { siteSlug: s
           )}
 
           <p className="dps-h">Dragon Realm</p>
-          <a className="dps-row" href={HUB_URL}>
+          <a className="dps-row dps-exit" href={HUB_URL} onClick={(e) => go(e, HUB_URL)}>
             <span aria-hidden>🏰</span>
-            <span><b>DracoPyre Strike</b><small>The hub — 10 games, leaderboards</small></span>
+            <span><b>Exit to DracoPyre Strike</b><small>Back to the hub — 10 games, leaderboards</small></span>
           </a>
           {ECOSYSTEM_SITES.map((s) =>
             s.slug === siteSlug ? (
@@ -95,7 +102,7 @@ export function DragonDock({ siteSlug, position = 'bottom-left' }: { siteSlug: s
                 <span><b>{s.title}</b><small>You are here</small></span>
               </div>
             ) : (
-              <a key={s.slug} className="dps-row" href={s.url}>
+              <a key={s.slug} className="dps-row" href={s.url} onClick={(e) => go(e, s.url)}>
                 <span aria-hidden>{s.emoji}</span>
                 <span><b>{s.title}</b><small>{s.tagline}</small></span>
               </a>
@@ -103,8 +110,8 @@ export function DragonDock({ siteSlug, position = 'bottom-left' }: { siteSlug: s
           )}
 
           <div className="dps-foot">
-            <a href={`${HUB_URL}/leaderboard`}>Leaderboards</a>
-            {user && <a href={`${HUB_URL}/profile`}>My profile</a>}
+            <a href={`${HUB_URL}/leaderboard`} onClick={(e) => go(e, `${HUB_URL}/leaderboard`)}>Leaderboards</a>
+            {user && <a href={`${HUB_URL}/profile`} onClick={(e) => go(e, `${HUB_URL}/profile`)}>My profile</a>}
             {user && (
               <button type="button" onClick={() => { setOpen(false); void signOut(); }}>Sign out</button>
             )}

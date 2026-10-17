@@ -34,3 +34,25 @@ button {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
+
+/* ===== Dragon Realm polish: entrance + hover animation for every menu ===== */
+@keyframes em-rise { from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes em-shine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes em-float { 0%, 100% { transform: translate3d(0, 0, 0) rotate(0); } 50% { transform: translate3d(0, -10px, 0) rotate(4deg); } }
+@keyframes em-sweep { to { transform: translateX(130%); } }
+.em-rise { animation: em-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.em-title { background-size: 220% 100%; animation: em-shine 7s ease-in-out infinite, em-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.em-float { animation: em-float 7s ease-in-out infinite; }
+.em-card { animation: em-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+.em-card > * { animation: em-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.em-card > *:nth-child(1) { animation-delay: 0.22s; }
+.em-card > *:nth-child(2) { animation-delay: 0.29s; }
+.em-card > *:nth-child(3) { animation-delay: 0.36s; }
+.em-card > *:nth-child(4) { animation-delay: 0.43s; }
+.em-card > *:nth-child(5) { animation-delay: 0.5s; }
+.em-card > *:nth-child(6) { animation-delay: 0.57s; }
+.em-card > *:nth-child(n + 7) { animation-delay: 0.64s; }
+.em-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 25%, rgb(255 255 255 / 0.28) 48%, transparent 70%); transform: translateX(-130%); pointer-events: none; }
+.em-btn:hover:not(:disabled)::before { animation: em-sweep 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.em-btn:focus-visible { outline: 2px solid #6ee7b7; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .em-rise, .em-title, .em-float, .em-card, .em-card > * { animation: none !important; } .em-btn:hover::before { animation: none !important; } }
